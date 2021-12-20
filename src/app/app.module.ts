@@ -15,6 +15,10 @@ import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './shared/auth.interceptor';
 import { environment } from '../environments/environment';
 
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+
 
 registerLocaleData(ruLocale, 'ru');
 
@@ -34,6 +38,9 @@ const INTERCEPTOR_PROVIDER: Provider = {
     PostComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
     BrowserModule,
     AppRoutingModule,
     SharedModule,

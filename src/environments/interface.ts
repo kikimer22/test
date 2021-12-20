@@ -1,5 +1,13 @@
 export interface Environment {
-  apiKey: string;
   production: boolean;
-  fbDbUrl: string;
+  firebase: {
+    apiKey: string;
+    databaseURL: string;
+    // authDomain: string;
+    // projectId: string;
+    // storageBucket: string;
+    // messagingSenderId: string;
+    // appId: string;
+    // measurementId: string;
+  };
 }

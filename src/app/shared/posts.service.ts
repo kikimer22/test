@@ -11,7 +11,7 @@ export class PostsService {
   }
 
   create(post: Post): Observable<Post> {
-    return this.http.post(`${environment.fbDbUrl}/posts.json`, post)
+    return this.http.post(`${environment.firebase.databaseURL}/posts.json`, post)
       .pipe(map((response: FbCreateResponse) => {
         return {
           ...post,
@@ -22,7 +22,7 @@ export class PostsService {
   }
 
   getAll(): Observable<Post[]> {
-    return this.http.get(`${environment.fbDbUrl}/posts.json`)
+    return this.http.get(`${environment.firebase.databaseURL}/posts.json`)
       .pipe(map((response: { [key: string]: any }) => {
         return Object
           .keys(response)
@@ -35,7 +35,7 @@ export class PostsService {
   }
 
   getById(id: string): Observable<Post> {
-    return this.http.get<Post>(`${environment.fbDbUrl}/posts/${id}.json`)
+    return this.http.get<Post>(`${environment.firebase.databaseURL}/posts/${id}.json`)
       .pipe(map((post: Post) => {
         return {
           ...post, id,
@@ -45,10 +45,10 @@ export class PostsService {
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${environment.fbDbUrl}/posts/${id}.json`);
+    return this.http.delete<void>(`${environment.firebase.databaseURL}/posts/${id}.json`);
   }
 
   update(post: Post): Observable<Post> {
-    return this.http.patch<Post>(`${environment.fbDbUrl}/posts/${post.id}.json`, post);
+    return this.http.patch<Post>(`${environment.firebase.databaseURL}/posts/${post.id}.json`, post);
   }
 }
