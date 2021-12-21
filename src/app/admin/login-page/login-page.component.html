@@ -1,9 +1,9 @@
-<form class="card" [formGroup]="form" (ngSubmit)="submit()">
+<form class="card" *ngIf="!isRecovery; else recovery" [formGroup]="form" (ngSubmit)="submit()">
   <h2>Войти в панель администратора</h2>
 
-  <div class="alert alert-danger" *ngIf="auth.error$ | async as error">
-    {{ error }}
-  </div>
+  <!--  <div class="alert alert-danger" *ngIf="auth.error$ | async as error">-->
+  <!--    {{ error }}-->
+  <!--  </div>-->
 
   <div class="alert alert-info" *ngIf="message">
     {{ message }}
@@ -58,3 +58,41 @@
   >Войти
   </button>
 </form>
+
+<ng-template #recovery>
+  <div class="form-control">
+    <label for="recoveryEmail">Email:</label>
+    <input id="recoveryEmail" type="email" [(ngModel)]="recoveryEmail">
+  </div>
+
+  <button
+    type="button"
+    class="btn"
+    (click)="recoverPassword()"
+    [disabled]="!recoveryEmail"
+  >Востановить пароль
+  </button>
+</ng-template>
+
+<div class="btn-holder">
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="signInGoogle()"
+  >Войти с GOOGLE
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    (click)="toggleRecoveryView()"
+  >Перейти к востановлению пароля
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    (click)="signOut()"
+  >Выйти
+  </button>
+</div>

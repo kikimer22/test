@@ -11,9 +11,12 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 })
 export class LoginPageComponent implements OnInit {
 
-  form: FormGroup;
-  submitted = false;
-  message: string;
+  public form: FormGroup;
+  public submitted = false;
+  public message: string;
+
+  public isRecovery: boolean;
+  public recoveryEmail: string;
 
   constructor(
     public auth: AuthService,
@@ -63,5 +66,22 @@ export class LoginPageComponent implements OnInit {
     });
 
   }
+
+  public signInGoogle() {
+    // this.auth.signInGoogle().then();
+  }
+
+  public toggleRecoveryView() {
+    this.isRecovery = !this.isRecovery;
+  }
+
+  public recoverPassword() {
+    // this.auth.recoverPassword(this.recoveryEmail);
+  }
+
+  public signOut() {
+    // this.auth.signOut().then();
+  }
+
 }
 

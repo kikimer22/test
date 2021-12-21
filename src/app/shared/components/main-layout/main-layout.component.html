@@ -1,5 +1,10 @@
-<nav class="navbar main">
+<nav class="navbar main bg-primary">
   <h1>Angular Blog</h1>
+  <ul>
+    <li routerLinkActive="active">
+      <a [routerLink]="['/admin']">admin</a>
+    </li>
+  </ul>
 </nav>
 
 <div class="container">
