@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { User } from '../../shared/interfaces';
+import { EnteredUserData } from '../../shared/interfaces';
 import { AuthService } from '../shared/services/auth.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss']
+  selector: 'app-auth-page',
+  templateUrl: './auth-page.component.html',
+  styleUrls: ['./auth-page.component.scss']
 })
-export class LoginPageComponent implements OnInit {
+export class AuthPageComponent implements OnInit {
 
   public form: FormGroup;
   public submitted = false;
@@ -20,20 +20,10 @@ export class LoginPageComponent implements OnInit {
 
   constructor(
     public auth: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
   ) {
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params: Params) => {
-      if (params['loginAgain']) {
-        this.message = 'Пожалуйста, введите данные';
-      } else if (params['authFailed']) {
-        this.message = 'Сессия истекла. Введите данные заного';
-      }
-    });
-
     this.form = new FormGroup({
       email: new FormControl(null, [
         Validators.required,
@@ -46,19 +36,19 @@ export class LoginPageComponent implements OnInit {
     });
   }
 
-  submit() {
+  public signInEmail() {
     if (this.form.invalid) {
       return;
     }
 
     this.submitted = true;
 
-    const user: User = {
+    const user: EnteredUserData = {
       email: this.form.value.email,
       password: this.form.value.password
     };
 
-    this.auth.signInUpEmail(user.email, user.password).then(() => {
+    this.auth.signInEmail(user.email, user.password).then(() => {
       this.form.reset();
       this.submitted = false;
     }, () => {
@@ -81,6 +71,10 @@ export class LoginPageComponent implements OnInit {
 
   public signOut() {
     // this.auth.signOut().then();
+  }
+
+  public emitHandler(data: EnteredUserData) {
+
   }
 
 }

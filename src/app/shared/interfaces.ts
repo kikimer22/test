@@ -1,7 +1,6 @@
-export interface User {
+export interface EnteredUserData {
   email: string;
   password: string;
-  returnSecureToken?: boolean;
 }
 
 export interface FbAuthResponse {

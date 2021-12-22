@@ -12,16 +12,16 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { PostComponent } from './shared/components/post/post.component';
 import { SharedModule } from './shared/shared.module';
-import { AuthInterceptor } from './shared/auth.interceptor';
+import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 import { environment } from '../environments/environment';
 
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 registerLocaleData(ruLocale, 'ru');
-
 
 const INTERCEPTOR_PROVIDER: Provider = {
   provide: HTTP_INTERCEPTORS,
@@ -44,9 +44,13 @@ const INTERCEPTOR_PROVIDER: Provider = {
     BrowserModule,
     AppRoutingModule,
     SharedModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production})
+    ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
+    BrowserAnimationsModule
   ],
-  providers: [INTERCEPTOR_PROVIDER],
+  providers: [
+    INTERCEPTOR_PROVIDER,
+    // {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

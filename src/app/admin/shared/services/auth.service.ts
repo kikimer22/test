@@ -3,6 +3,12 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
+export enum AuthTypes {
+  SignUpEmail = 'signUpEmail',
+  SignInEmail = 'signInEmail',
+  GoogleAuth = 'googleAuth',
+}
+
 // import {
 //   getAuth,
 //   signInWithEmailAndPassword,
@@ -35,17 +41,25 @@ export class AuthService {
   ) {
   }
 
-  public async signInUpEmail(email: string, password: string): Promise<void> {
-    // try to login, if NO check password, if NO create acc
+  public async signUpEmail(email: string, password: string): Promise<void> {
+
+    try {
+      const userCredential: UserCredential = await this.fireAuth.createUserWithEmailAndPassword(email, password);
+      this.handleLogin(userCredential.user);
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+  public async signInEmail(email: string, password: string): Promise<void> {
+
     try {
       const userCredential: UserCredential = await this.fireAuth.signInWithEmailAndPassword(email, password);
       this.handleLogin(userCredential.user);
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         console.log('wrong-password');
-      } else if (error.code === 'auth/user-not-found') {
-        const userCredential: UserCredential = await this.fireAuth.createUserWithEmailAndPassword(email, password);
-        this.handleLogin(userCredential.user);
       } else {
         console.log(error);
       }
@@ -150,7 +164,7 @@ export class AuthService {
   private async handleLogin(user: User) {
     console.log('user', user);
     this.user$.next(user);
-    this.router.navigate(['/']);
+    // this.router.navigate(['/']);
   }
 
 }

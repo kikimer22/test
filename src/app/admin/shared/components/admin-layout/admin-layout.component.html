@@ -1,24 +1,38 @@
-<app-alert></app-alert>
-
-<nav class="navbar bg-primary">
-  <h1>
-    <a routerLink="/">Angular Admin</a>
-  </h1>
-
-  <!--  <ul *ngIf="auth.isAuthenticated()">-->
-  <ul>
-    <li routerLinkActive="active">
-      <a [routerLink]="['/admin', 'dashboard']">Главная</a>
-    </li>
-    <li routerLinkActive="active">
-      <a [routerLink]="['/admin', 'create']">Создать</a>
-    </li>
-    <li>
-      <a href="#" (click)="logout($event)">Выйти</a>
-    </li>
-  </ul>
-</nav>
-
-<div class="container">
-  <router-outlet></router-outlet>
+<div class="app-container">
+  <mat-toolbar>
+    <a routerLink="/"><span>root</span></a>
+    <span class="spacer"></span>
+    <button *ngIf="(isMobile | async); else DeskTopNav" mat-icon-button class="icon icon-menu" aria-label="menu"
+            (click)="sidenav.toggle()">
+      <mat-icon>{{ isMenuOpen ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+    <ng-template #DeskTopNav>
+      <a mat-button [routerLink]="['/admin', 'dashboard']" [routerLinkActive]="['is-active']"
+         [routerLinkActiveOptions]="{exact: true}">dashboard</a>
+      <a mat-button [routerLink]="['/admin', 'create']" [routerLinkActive]="['is-active']">create</a>
+      <button mat-button (click)="logout($event)">exit</button>
+    </ng-template>
+  </mat-toolbar>
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav
+      #sidenav
+      autoFocus="false"
+      position="end"
+      mode="over"
+      [(opened)]="isMenuOpen"
+      class="sidenav"
+      (click)="onSidenavClick()"
+    >
+      <a mat-button [routerLink]="['/admin', 'dashboard']" [routerLinkActive]="['is-active']"
+         [routerLinkActiveOptions]="{exact: true}">dashboard</a>
+      <a mat-button [routerLink]="['/admin', 'create']" [routerLinkActive]="['is-active']">create</a>
+      <button mat-button (click)="logout($event)">exit</button>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <main>
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
+

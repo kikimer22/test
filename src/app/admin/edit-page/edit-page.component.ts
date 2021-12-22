@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { PostsService } from '../../shared/posts.service';
+import { PostsService } from '../../shared/services/posts.service';
 import { switchMap } from 'rxjs/operators';
 import { Post } from '../../shared/interfaces';
 import { FormControl, FormGroup, Validators } from '@angular/forms';

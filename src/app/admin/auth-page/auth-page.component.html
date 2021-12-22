@@ -1,0 +1,49 @@
+<mat-tab-group>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">thumb_up</mat-icon>
+      signIn
+    </ng-template>
+    <ng-template matTabContent>
+      signIn
+      <app-email-password-form (emittedValue)="emitHandler($event)"></app-email-password-form>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">thumb_up</mat-icon>
+      signUp
+    </ng-template>
+    <ng-template matTabContent>
+      signUp
+      <app-email-password-form (emittedValue)="emitHandler($event)"></app-email-password-form>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">thumb_up</mat-icon>
+      recovery pass
+    </ng-template>
+    <ng-template matTabContent>
+      recovery pass
+      <app-email-password-form (emittedValue)="emitHandler($event)"></app-email-password-form>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">thumb_up</mat-icon>
+      google
+    </ng-template>
+    <ng-template matTabContent>
+      google
+      <app-email-password-form (emittedValue)="emitHandler($event)"></app-email-password-form>
+    </ng-template>
+  </mat-tab>
+
+</mat-tab-group>
+
+

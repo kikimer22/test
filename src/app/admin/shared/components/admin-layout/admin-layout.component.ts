@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { MobileService } from '../../../../shared/services/mobile.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-admin-layout',
@@ -9,18 +11,28 @@ import { AuthService } from '../../services/auth.service';
 })
 export class AdminLayoutComponent implements OnInit {
 
+  public isMobile: Observable<boolean> = this.mobileService.mobile;
+
+  public isMenuOpen = false;
+
   constructor(
     private router: Router,
-    public auth: AuthService
+    public auth: AuthService,
+    private mobileService: MobileService,
   ) {
   }
 
   ngOnInit() {
   }
 
-  logout(event: Event) {
+  public onSidenavClick(): void {
+    this.isMenuOpen = false;
+  }
+
+  public logout(event: Event) {
     event.preventDefault();
     // this.auth.logout();
     this.router.navigate(['/admin', 'login']);
   }
+
 }
