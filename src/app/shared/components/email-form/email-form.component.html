@@ -1,0 +1,10 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  <mat-form-field appearance="fill">
+    <mat-label>Input</mat-label>
+    <input matInput placeholder="email@gmail.com" [formControl]="email">
+  </mat-form-field>
+
+  <button mat-flat-button color="primary" type="submit" [disabled]="!email?.value">submit</button>
+
+</form>

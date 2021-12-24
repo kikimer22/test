@@ -1,29 +1,23 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { EnteredUserData } from '../../interfaces';
 
 @Component({
-  selector: 'app-email-password-form',
-  templateUrl: './email-password-form.component.html',
-  styleUrls: ['./email-password-form.component.scss'],
+  selector: 'app-email-form',
+  templateUrl: './email-form.component.html',
+  styleUrls: ['./email-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmailPasswordFormComponent implements OnInit {
+export class EmailFormComponent implements OnInit {
 
   @Input() isSubmitted = false;
-  @Output() emittedValue: EventEmitter<EnteredUserData> = new EventEmitter<EnteredUserData>();
+  @Output() emittedValue: EventEmitter<string> = new EventEmitter<string>();
 
   public form: FormGroup;
   public email = new FormControl(null, [
     Validators.required,
     Validators.email
   ]);
-  public password = new FormControl(null, [
-    Validators.required,
-    Validators.minLength(6)
-  ]);
 
-  public passwordVisibility = false;
   public submitted = false;
 
   constructor(
@@ -31,7 +25,6 @@ export class EmailPasswordFormComponent implements OnInit {
   ) {
     this.form = fb.group({
       email: this.email,
-      password: this.password,
     });
   }
 
@@ -45,12 +38,7 @@ export class EmailPasswordFormComponent implements OnInit {
 
     this.submitted = true;
 
-    const user: EnteredUserData = {
-      email: this.form.value.email,
-      password: this.form.value.password
-    };
-
-    this.emittedValue.emit(user);
+    this.emittedValue.emit(this.form.value.email);
 
   }
 

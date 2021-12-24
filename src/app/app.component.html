@@ -1,1 +1,56 @@
-<router-outlet></router-outlet>
+<div class="app-container">
+
+  <!--   HEADER   -->
+  <mat-toolbar>
+    <a mat-button routerLink="/" [routerLinkActive]="['is-active']"
+       [routerLinkActiveOptions]="{exact: true}"><span>root</span></a>
+    <span class="spacer"></span>
+
+    <!--   MOB   -->
+    <button *ngIf="(isMobile | async); else DeskTopNav" mat-icon-button class="icon icon-menu" aria-label="menu"
+            (click)="sidenav.toggle()">
+      <mat-icon>{{ isMenuOpen ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+
+    <!--   DESK   -->
+    <ng-template #DeskTopNav>
+      <a mat-button *ngIf="!user" [routerLink]="['/admin', 'auth']" [routerLinkActive]="['is-active']"
+         [routerLinkActiveOptions]="{exact: true}">auth</a>
+      <a mat-button *ngIf="user" [routerLink]="['/admin', 'dashboard']" [routerLinkActive]="['is-active']"
+         [routerLinkActiveOptions]="{exact: true}">dashboard</a>
+      <a mat-button *ngIf="user" [routerLink]="['/admin', 'create']" [routerLinkActive]="['is-active']">create</a>
+      <button mat-button *ngIf="user" (click)="signOut($event)">exit</button>
+    </ng-template>
+
+  </mat-toolbar>
+
+  <!--   MAIN   -->
+  <mat-sidenav-container class="sidenav-container">
+
+    <!--   MOB MENU   -->
+    <mat-sidenav #sidenav
+                 autoFocus="false"
+                 position="end"
+                 mode="over"
+                 [(opened)]="isMenuOpen"
+                 class="sidenav"
+                 (click)="onSidenavClick()"
+    >
+      <a mat-button *ngIf="!user" [routerLink]="['/admin', 'auth']" [routerLinkActive]="['is-active']"
+         [routerLinkActiveOptions]="{exact: true}">auth</a>
+      <a mat-button *ngIf="user" [routerLink]="['/admin', 'dashboard']" [routerLinkActive]="['is-active']"
+         [routerLinkActiveOptions]="{exact: true}">dashboard</a>
+      <a mat-button *ngIf="user" [routerLink]="['/admin', 'create']" [routerLinkActive]="['is-active']">create</a>
+      <button mat-button *ngIf="user" (click)="signOut($event)">exit</button>
+    </mat-sidenav>
+
+    <!--   CONTENT CONTAINER   -->
+    <mat-sidenav-content>
+      <main>
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+
+  </mat-sidenav-container>
+
+</div>

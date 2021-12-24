@@ -20,6 +20,7 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { AuthPageComponent } from './auth-page/auth-page.component';
 
 registerLocaleData(ruLocale, 'ru');
 
@@ -35,7 +36,8 @@ const INTERCEPTOR_PROVIDER: Provider = {
     MainLayoutComponent,
     HomePageComponent,
     PostPageComponent,
-    PostComponent
+    PostComponent,
+    AuthPageComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),

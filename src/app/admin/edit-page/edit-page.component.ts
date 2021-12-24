@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { PostsService } from '../../shared/services/posts.service';
 import { switchMap } from 'rxjs/operators';
@@ -10,7 +10,8 @@ import { AlertService } from '../shared/services/alert.service';
 @Component({
   selector: 'app-edit-page',
   templateUrl: './edit-page.component.html',
-  styleUrls: ['./edit-page.component.scss']
+  styleUrls: ['./edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditPageComponent implements OnInit, OnDestroy {
 

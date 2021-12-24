@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Post } from '../../shared/interfaces';
 import { PostsService } from '../../shared/services/posts.service';
@@ -7,7 +7,8 @@ import { AlertService } from '../shared/services/alert.service';
 @Component({
   selector: 'app-create-page',
   templateUrl: './create-page.component.html',
-  styleUrls: ['./create-page.component.scss']
+  styleUrls: ['./create-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreatePageComponent implements OnInit {
 
