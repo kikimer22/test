@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { PostsService } from '../shared/services/posts.service';
 import { Observable } from 'rxjs';
 import { Post } from '../shared/interfaces';
@@ -11,15 +11,30 @@ import { Post } from '../shared/interfaces';
 })
 export class HomePageComponent implements OnInit {
 
-  posts$: Observable<Post[]>;
+  public posts: Post[];
+  public isLoading = true;
 
   constructor(
-    private postsService: PostsService
+    private postsService: PostsService,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
   ngOnInit() {
-    this.posts$ = this.postsService.getAll();
+    this.getPosts();
+  }
+
+  private getPosts() {
+    this.postsService.getAll().subscribe(posts => {
+      console.log(posts);
+      this.isLoading = false;
+      if (posts) {
+        this.posts = posts;
+      } else {
+        this.posts = [];
+      }
+      this.cdr.detectChanges();
+    });
   }
 
 }

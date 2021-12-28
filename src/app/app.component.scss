@@ -1,0 +1,35 @@
+:host {
+  flex: auto;
+  display: flex;
+  flex-flow: column;
+}
+
+.app-container {
+  flex: auto;
+  display: flex;
+  flex-flow: column;
+}
+
+mat-toolbar {
+  align-items: center;
+  justify-content: space-between;
+}
+
+mat-sidenav-container {
+  flex: auto;
+  display: flex;
+  flex-flow: column;
+  padding: 0 1rem;
+  :host ::ng-deep & {
+    mat-sidenav {
+      .mat-drawer-inner-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        flex-flow: column;
+      }
+    }
+  }
+}
+
+

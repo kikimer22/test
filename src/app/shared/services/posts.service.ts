@@ -7,10 +7,12 @@ import { map } from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient
+  ) {
   }
 
-  create(post: Post): Observable<Post> {
+  public create(post: Post): Observable<Post> {
     return this.http.post(`${environment.firebase.databaseURL}/posts.json`, post)
       .pipe(map((response: FbCreateResponse) => {
         return {
@@ -21,20 +23,24 @@ export class PostsService {
       }));
   }
 
-  getAll(): Observable<Post[]> {
+  public getAll(): Observable<Post[]> {
     return this.http.get(`${environment.firebase.databaseURL}/posts.json`)
       .pipe(map((response: { [key: string]: any }) => {
-        return Object
-          .keys(response)
-          .map(key => ({
-            ...response[key],
-            id: key,
-            date: new Date(response[key].date)
-          }));
+        if (response && Object.keys(response).length) {
+          return Object
+            .keys(response)
+            .map(key => ({
+              ...response[key],
+              id: key,
+              date: new Date(response[key].date)
+            }));
+        } else {
+          return [];
+        }
       }));
   }
 
-  getById(id: string): Observable<Post> {
+  public getById(id: string): Observable<Post> {
     return this.http.get<Post>(`${environment.firebase.databaseURL}/posts/${id}.json`)
       .pipe(map((post: Post) => {
         return {
@@ -44,11 +50,12 @@ export class PostsService {
       }));
   }
 
-  remove(id: string): Observable<void> {
+  public remove(id: string): Observable<void> {
     return this.http.delete<void>(`${environment.firebase.databaseURL}/posts/${id}.json`);
   }
 
-  update(post: Post): Observable<Post> {
+  public update(post: Post): Observable<Post> {
     return this.http.patch<Post>(`${environment.firebase.databaseURL}/posts/${post.id}.json`, post);
   }
+
 }

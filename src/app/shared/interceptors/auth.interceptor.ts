@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
+import { idToken } from '@angular/fire/auth';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -15,32 +16,28 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req);
+    if (this.auth.token) {
+      req = req.clone({
+        setParams: {
+          auth: this.auth.token
+        }
+      });
+    }
+    return next.handle(req)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.log('[Interceptor Error]: ', error);
+          if (error.status === 401) {
+            this.auth.signOut();
+            this.router.navigate(['/admin', 'auth'], {
+              queryParams: {
+                authFailed: true
+              }
+            });
+          }
+          return throwError(error);
+        })
+      );
   }
-
-  // intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  //   if (this.auth.isAuthenticated()) {
-  //     req = req.clone({
-  //       setParams: {
-  //         auth: this.auth.token
-  //       }
-  //     });
-  //   }
-  //   return next.handle(req)
-  //     .pipe(
-  //       catchError((error: HttpErrorResponse) => {
-  //         console.log('[Interceptor Error]: ', error);
-  //         if (error.status === 401) {
-  //           this.auth.logout();
-  //           this.router.navigate(['/admin', 'login'], {
-  //             queryParams: {
-  //               authFailed: true
-  //             }
-  //           });
-  //         }
-  //         return throwError(error);
-  //       })
-  //     );
-  // }
 
 }

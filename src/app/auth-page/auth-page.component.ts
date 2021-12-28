@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { EnteredUserData } from '../shared/interfaces';
 import { AuthService } from '../shared/services/auth.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth-page',
@@ -11,10 +12,13 @@ import { Subscription } from 'rxjs';
 })
 export class AuthPageComponent implements OnInit, OnDestroy {
 
+  public selectedTabIndex = 0;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     public auth: AuthService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {
   }
 
@@ -34,27 +38,41 @@ export class AuthPageComponent implements OnInit, OnDestroy {
   }
 
   public signInEmail(data: EnteredUserData) {
-    this.auth.signInEmail(data);
+    this.auth.signInUpEmail(data.email, data.password).then(() => {
+      this.router.navigate(['/']);
+    }).catch(() => {
+      this.selectedTabIndex = 3;
+      this.cdr.detectChanges();
+    });
   }
 
   public signUpEmail(data: EnteredUserData) {
-    this.auth.signUpEmail(data);
+    this.auth.signInUpEmail(data.email, data.password).then(() => {
+      this.router.navigate(['/']);
+    }).catch(() => {
+      this.selectedTabIndex = 3;
+      this.cdr.detectChanges();
+    });
   }
 
   public signInGoogle() {
-    this.auth.signInGoogle().then();
+    this.auth.signInGoogle().then(() => {
+      this.router.navigate(['/']);
+    });
   }
 
   public recoverPassword(email: string) {
-    this.auth.recoverPassword(email);
+    this.auth.recoverPassword(email).then(() => {
+      this.selectedTabIndex = 1;
+      this.cdr.detectChanges();
+    }).catch(() => {
+    });
   }
 
   public signOut() {
-    // this.auth.signOut().then();
-  }
-
-  public emitHandler(data: EnteredUserData) {
-    console.log(data);
+    this.auth.signOut().then(() => {
+      this.router.navigate(['admin', 'auth']);
+    });
   }
 
 }

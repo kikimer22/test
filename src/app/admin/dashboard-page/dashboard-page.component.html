@@ -1,37 +1,42 @@
-<div *ngIf="posts.length; else loading">
-  <div class="form-control">
-    <input type="text" placeholder="Найти пост..." [(ngModel)]="searchStr">
-  </div>
-  <table>
-    <thead>
-    <tr>
-      <th>#</th>
-      <th>Автор</th>
-      <th>Название</th>
-      <th>Дата</th>
-      <th>Действие</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let post of posts | searchPosts:searchStr; let idx = index">
-      <td>{{ idx + 1 }}</td>
-      <td>{{ post.author }}</td>
-      <td>{{ post.title }}</td>
-      <td>{{ post.date | date:'medium':null:'ru' }}</td>
-      <td>
-        <button
-          class="btn btn-link open"
-          [routerLink]="['/admin', 'post', post.id, 'edit']"
-        >
-          Открыть
-        </button>
-        <a (click)="remove(post.id)">Удалить</a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-</div>
+<ng-container *ngIf="isLoading; else loaded">
+  <p class="text-center">loading...</p>
+</ng-container>
 
-<ng-template #loading>
-  <p class="text-center">Идет загрузка...</p>
+<ng-template #loaded>
+
+  <ng-container *ngIf="posts.length; else noPosts">
+    <div class="form-control">
+      <input type="text" placeholder="Найти пост..." [(ngModel)]="searchStr">
+    </div>
+    <table>
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Автор</th>
+        <th>Название</th>
+        <th>Дата</th>
+        <th>Действие</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let post of posts | searchPosts:searchStr; let idx = index">
+        <td>{{ idx + 1 }}</td>
+        <td>{{ post.author }}</td>
+        <td>{{ post.title }}</td>
+        <td>{{ post.date | date:'medium':null:'ru' }}</td>
+        <td>
+          <button mat-button type="button" class="btn" [routerLink]="['/admin', 'post', post.id, 'edit']">
+            Открыть
+          </button>
+          <a mat-button (click)="remove(post.id)">Удалить</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </ng-container>
+
+  <ng-template #noPosts>
+    <p class="text-center">no posts...</p>
+  </ng-template>
+
 </ng-template>

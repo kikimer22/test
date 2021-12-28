@@ -9,9 +9,5 @@
     <small>{{ post.author }}</small>
   </div>
 
-  <button
-    [routerLink]="['/post', post.id]"
-    class="btn btn-dark"
-  >Открыть
-  </button>
+  <button mat-button type="button" class="btn" [routerLink]="['/post', post.id]">Открыть</button>
 </div>

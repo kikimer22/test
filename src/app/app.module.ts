@@ -41,6 +41,7 @@ const INTERCEPTOR_PROVIDER: Provider = {
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
+    // AngularFireModule.initializeApp(environment.firebase, 'angular-auth-firebase'),
     AngularFireAuthModule,
     AngularFirestoreModule,
     BrowserModule,

@@ -1,109 +1,152 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { environment } from '../../../environments/environment';
+
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Router } from '@angular/router';
 import firebase from 'firebase/compat';
-import UserCredential = firebase.auth.UserCredential;
-import User = firebase.User;
-import { EnteredUserData } from '../interfaces';
 import { GoogleAuthProvider } from 'firebase/auth';
 
-@Injectable({providedIn: 'root'})
+import User = firebase.User;
+
+import UserCredential = firebase.auth.UserCredential;
+import AuthProvider = firebase.auth.AuthProvider;
+import AuthCredential = firebase.auth.AuthCredential;
+import { FbAuthResponse } from '../interfaces';
+
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
 
-  public user$: BehaviorSubject<any> = new BehaviorSubject(null);
+  public user$: BehaviorSubject<User> = new BehaviorSubject(null);
+  public token: string = null;
   public subscriptions: Subscription = new Subscription();
 
   constructor(
-    private router: Router,
     private fireAuth: AngularFireAuth,
   ) {
-  }
 
-  public async signUpEmail(data: EnteredUserData): Promise<void> {
-
-    try {
-      const userCredential: UserCredential = await this.fireAuth.createUserWithEmailAndPassword(data.email, data.password);
-      this.handleLogin(userCredential.user);
-      this.redirectAfterAuth();
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        console.log('email-already-exist run signInEmail');
-        this.signInEmail(data);
+    this.fireAuth.authState.subscribe((userData: User | null) => {
+      if (userData) {
+        userData.getIdToken().then(t => {
+          this.token = t;
+        });
+        localStorage.setItem('user', JSON.stringify(userData));
+        this.user$.next(userData);
       } else {
-        console.log(error);
+        localStorage.removeItem('user');
+        this.user$.next(null);
       }
-    }
-
-  }
-
-  public async signInEmail(data: EnteredUserData): Promise<void> {
-
-    try {
-      const userCredential: UserCredential = await this.fireAuth.signInWithEmailAndPassword(data.email, data.password);
-      this.handleLogin(userCredential.user);
-      this.redirectAfterAuth();
-    } catch (error) {
-      if (error.code === 'auth/wrong-password') {
-        console.log('wrong-password');
-      } else if (error.code === 'auth/user-not-found') {
-        this.signUpEmail(data);
-      } else {
-        console.log(error);
-      }
-    }
+    });
 
   }
 
   public async signInGoogle(): Promise<void> {
 
+    const provider = new GoogleAuthProvider();
+    provider.addScope('email');
+    await this.fireAuth.signInWithPopup(provider);
+
+    // this.signInWebWithProvider(provider);
+
+  }
+
+  public async signInUpEmail(email: string, password: string): Promise<void> {
+    let error: any;
+    let response: UserCredential;
+
     try {
-      const provider = new GoogleAuthProvider();
-      const userCredential: UserCredential = await this.fireAuth.signInWithPopup(provider);
-      this.handleLogin(userCredential.user);
-      this.redirectAfterAuth();
-    } catch (error) {
-      console.log(error);
+      response = await this.fireAuth.signInWithEmailAndPassword(email, password);
+    } catch (err) {
+      error = err;
+    }
+
+    if (error && error.code === 'auth/user-not-found') {
+      error = null;
+      try {
+        response = await this.fireAuth.createUserWithEmailAndPassword(email, password);
+      } catch (err) {
+        error = err;
+      }
+    }
+
+    if (error) {
+      if (error.code === 'auth/wrong-password') {
+        console.log('Please use "Forgot Password"');
+      } else {
+        console.log(error);
+      }
+      throw error;
+    }
+
+    if (!response) {
+      return;
     }
 
   }
 
-  public async recoverPassword(email: string): Promise<void> {
-
+  public async recoverPassword(email: string): Promise<any> {
     try {
-      this.fireAuth.sendPasswordResetEmail(email).then(() => {
-      });
+      await this.fireAuth.sendPasswordResetEmail(email);
+      console.log('Password reset email sent. Please check email.', 'Recovery password');
     } catch (error) {
       console.log(error);
     }
-
   }
 
   public async signOut(): Promise<void> {
-
     try {
-      this.fireAuth.signOut().then(() => {
-        this.handleLogin(null);
-        this.router.navigate(['admin', 'auth']);
-      });
+      await this.fireAuth.signOut();
     } catch (error) {
       console.log(error);
     }
-
   }
 
-  private redirectAfterAuth() {
-    this.router.navigate(['/']);
-  }
+  private async signInEmail(email: string, password: string, cred?: AuthCredential): Promise<UserCredential> {
+    try {
+      const response = await this.fireAuth.signInWithEmailAndPassword(email, password);
 
-  private async handleLogin(user: User) {
-    this.user$.next(user);
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.setItem('user', null);
+      if (cred) {
+        await response.user.linkWithCredential(cred);
+      }
+      return response;
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
+
+  // private async signInWebWithProvider(
+  //   provider: AuthProvider,
+  //   cred?: AuthCredential
+  // ): Promise<UserCredential> {
+  //
+  //   try {
+  //     const response: UserCredential = await this.fireAuth.signInWithPopup(provider);
+  //
+  //     if (cred) {
+  //       await response.user.linkWithCredential(cred);
+  //     }
+  //
+  //     return response;
+  //   } catch (error) {
+  //     if (error.code === 'auth/account-exists-with-different-credential') {
+  //       const pendingCred: AuthCredential = error.credential;
+  //       const email: string = error.email;
+  //
+  //       const [method] = await this.fireAuth.fetchSignInMethodsForEmail(email);
+  //       if (method === 'password') {
+  //         const password = prompt(`An account already exists with the same email address ${email} but different sign-in credentials. Enter password.`);
+  //         if (password) {
+  //           return this.signInEmail(email, password, pendingCred);
+  //         }
+  //       } else {
+  //         const newProvider = new GoogleAuthProvider();
+  //         // newProvider.addScope('email');
+  //         this.signInWebWithProvider(newProvider, pendingCred);
+  //       }
+  //     }
+  //   }
+  //
+  // }
 
 }
