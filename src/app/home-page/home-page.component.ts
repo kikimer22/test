@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { PostsService } from '../shared/services/posts.service';
 import { Observable } from 'rxjs';
 import { Post } from '../shared/interfaces';
+import { NestBeService } from '../shared/services/nest-be.service';
 
 @Component({
   selector: 'app-home-page',
@@ -17,6 +18,7 @@ export class HomePageComponent implements OnInit {
   constructor(
     private postsService: PostsService,
     private cdr: ChangeDetectorRef,
+    private nestBeService: NestBeService,
   ) {
   }
 
@@ -25,7 +27,7 @@ export class HomePageComponent implements OnInit {
   }
 
   private getPosts() {
-    this.postsService.getAll().subscribe(posts => {
+    this.postsService.getAll().subscribe((posts: Post[]) => {
       console.log(posts);
       this.isLoading = false;
       if (posts) {
@@ -34,6 +36,12 @@ export class HomePageComponent implements OnInit {
         this.posts = [];
       }
       this.cdr.detectChanges();
+    });
+  }
+
+  public getUsersFromBe() {
+    this.nestBeService.getUsers().subscribe((users: any) => {
+      console.log(users);
     });
   }
 

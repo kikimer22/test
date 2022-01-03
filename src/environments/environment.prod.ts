@@ -2,6 +2,7 @@ import { Environment } from './interface';
 
 export const environment: Environment = {
   production: true,
+  beUrl: 'http://localhost:3000',
   firebase: {
     apiKey: 'AIzaSyCSFTgEryAQZejDrC928UlLTKkTGJeGKvA',
     authDomain: 'test031121-94e42.firebaseapp.com',

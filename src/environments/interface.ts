@@ -1,5 +1,6 @@
 export interface Environment {
   production: boolean;
+  beUrl: string;
   firebase: {
     apiKey: string;
     authDomain: string;
