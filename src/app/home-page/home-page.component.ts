@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { PostsService } from '../shared/services/posts.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Post } from '../shared/interfaces';
 import { NestBeService } from '../shared/services/nest-be.service';
+import firebase from 'firebase/compat';
+import User = firebase.User;
+import { AuthService, UserBE } from '../shared/services/auth.service';
 
 @Component({
   selector: 'app-home-page',
@@ -14,10 +17,14 @@ export class HomePageComponent implements OnInit {
 
   public posts: Post[];
   public isLoading = true;
+  public user: User;
+  public subscriptions: Subscription = new Subscription();
+
 
   constructor(
     private postsService: PostsService,
     private cdr: ChangeDetectorRef,
+    private authService: AuthService,
     private nestBeService: NestBeService,
   ) {
   }
@@ -28,7 +35,7 @@ export class HomePageComponent implements OnInit {
 
   private getPosts() {
     this.postsService.getAll().subscribe((posts: Post[]) => {
-      console.log(posts);
+      // console.log(posts);
       this.isLoading = false;
       if (posts) {
         this.posts = posts;
@@ -39,10 +46,14 @@ export class HomePageComponent implements OnInit {
     });
   }
 
-  public getUsersFromBe() {
-    this.nestBeService.getUsers().subscribe((users: any) => {
-      console.log(users);
-    });
+  public getUser() {
+    // const subscription = this.authService.user$.subscribe((userData) => {
+    //   if (userData) {
+    //     const userBE: UserBE = {email: userData.email, uid: userData.uid};
+    //     this.nestBeService.saveUserInBE(userBE);
+    //   }
+    // });
+    // this.subscriptions.add(subscription);
   }
 
 }

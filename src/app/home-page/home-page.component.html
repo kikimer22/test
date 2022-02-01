@@ -3,9 +3,6 @@
 </ng-container>
 
 <ng-template #loaded>
-  <div class="btn-holder">
-    <button (click)="getUsersFromBe()">get users from nest</button>
-  </div>
   <div class="posts" *ngIf="posts.length; else noPosts">
     <app-post *ngFor="let post of posts" [post]="post"></app-post>
   </div>

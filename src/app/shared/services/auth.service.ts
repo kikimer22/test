@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, from, of, Subscription } from 'rxjs';
 
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat';
-import { GoogleAuthProvider } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import { GoogleAuthProvider, getAuth, linkWithPopup } from 'firebase/auth';
 
 import User = firebase.User;
 
@@ -11,6 +11,22 @@ import UserCredential = firebase.auth.UserCredential;
 import AuthProvider = firebase.auth.AuthProvider;
 import AuthCredential = firebase.auth.AuthCredential;
 import { FbAuthResponse } from '../interfaces';
+import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { NestBeService } from './nest-be.service';
+import { map, mergeMap, switchMap, take } from 'rxjs/operators';
+
+export interface UserBE {
+  email: string;
+  uid: string;
+}
+
+export interface UserFromBE {
+  email: string;
+  uid: string;
+  id: number;
+  isActive: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -18,63 +34,63 @@ import { FbAuthResponse } from '../interfaces';
 export class AuthService {
 
   public user$: BehaviorSubject<User> = new BehaviorSubject(null);
-  public token: string = null;
+  public idToken: string = null;
   public subscriptions: Subscription = new Subscription();
 
   constructor(
     private fireAuth: AngularFireAuth,
+    private nestBeService: NestBeService
   ) {
 
-    this.fireAuth.authState.subscribe((userData: User | null) => {
-      if (userData) {
-        userData.getIdToken().then(t => {
-          this.token = t;
-        });
+    this.fireAuth.authState.pipe(
+      mergeMap((userData: User | null) => {
+        if (!userData) {
+          localStorage.removeItem('user');
+          this.user$.next(null);
+          this.idToken = '';
+          return of('');
+        }
         localStorage.setItem('user', JSON.stringify(userData));
         this.user$.next(userData);
-      } else {
-        localStorage.removeItem('user');
-        this.user$.next(null);
-      }
+        return from(userData.getIdToken()).pipe(
+          mergeMap((idToken: string) => {
+            this.idToken = idToken;
+            console.log(idToken);
+            return this.nestBeService.getUserByUid(userData.uid, this.idToken).pipe(
+              map((userFromBE: UserFromBE) => {
+                if (!userFromBE) {
+                  this.nestBeService.saveUserInBE({email: userData.email, uid: userData.uid}, idToken);
+                }
+                return userData;
+              })
+            );
+          })
+        );
+      })
+    ).subscribe((userData: User) => {
+      console.log('userData', userData);
     });
 
   }
 
   public async signInGoogle(): Promise<void> {
-
     const provider = new GoogleAuthProvider();
     provider.addScope('email');
     await this.fireAuth.signInWithPopup(provider);
-
-    // this.signInWebWithProvider(provider);
-
   }
 
-  public async signInUpEmail(email: string, password: string): Promise<void> {
+  public async signUpEmail(email: string, password: string): Promise<void> {
     let error: any;
     let response: UserCredential;
 
     try {
-      response = await this.fireAuth.signInWithEmailAndPassword(email, password);
+      response = await this.fireAuth.createUserWithEmailAndPassword(email, password);
     } catch (err) {
       error = err;
     }
 
-    if (error && error.code === 'auth/user-not-found') {
-      error = null;
-      try {
-        response = await this.fireAuth.createUserWithEmailAndPassword(email, password);
-      } catch (err) {
-        error = err;
-      }
-    }
-
     if (error) {
-      if (error.code === 'auth/wrong-password') {
-        console.log('Please use "Forgot Password"');
-      } else {
-        console.log(error);
-      }
+      console.log(error);
       throw error;
     }
 
@@ -101,7 +117,7 @@ export class AuthService {
     }
   }
 
-  private async signInEmail(email: string, password: string, cred?: AuthCredential): Promise<UserCredential> {
+  public async signInEmail(email: string, password: string, cred?: AuthCredential): Promise<UserCredential> {
     try {
       const response = await this.fireAuth.signInWithEmailAndPassword(email, password);
 
@@ -114,39 +130,5 @@ export class AuthService {
       throw error;
     }
   }
-
-  // private async signInWebWithProvider(
-  //   provider: AuthProvider,
-  //   cred?: AuthCredential
-  // ): Promise<UserCredential> {
-  //
-  //   try {
-  //     const response: UserCredential = await this.fireAuth.signInWithPopup(provider);
-  //
-  //     if (cred) {
-  //       await response.user.linkWithCredential(cred);
-  //     }
-  //
-  //     return response;
-  //   } catch (error) {
-  //     if (error.code === 'auth/account-exists-with-different-credential') {
-  //       const pendingCred: AuthCredential = error.credential;
-  //       const email: string = error.email;
-  //
-  //       const [method] = await this.fireAuth.fetchSignInMethodsForEmail(email);
-  //       if (method === 'password') {
-  //         const password = prompt(`An account already exists with the same email address ${email} but different sign-in credentials. Enter password.`);
-  //         if (password) {
-  //           return this.signInEmail(email, password, pendingCred);
-  //         }
-  //       } else {
-  //         const newProvider = new GoogleAuthProvider();
-  //         // newProvider.addScope('email');
-  //         this.signInWebWithProvider(newProvider, pendingCred);
-  //       }
-  //     }
-  //   }
-  //
-  // }
 
 }

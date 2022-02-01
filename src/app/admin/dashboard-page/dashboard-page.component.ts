@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { PostsService } from '../../shared/services/posts.service';
 import { Post } from '../../shared/interfaces';
 import { Subscription } from 'rxjs';
-import { AlertService } from '../shared/services/alert.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -19,7 +18,6 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private postsService: PostsService,
-    private alert: AlertService,
     private cdr: ChangeDetectorRef,
   ) {
   }
@@ -49,7 +47,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   public remove(id: string) {
     const subscription = this.postsService.remove(id).subscribe(() => {
       this.posts = this.posts.filter(post => post.id !== id);
-      this.alert.warning('Пост был удален');
+      this.cdr.detectChanges();
     });
     this.subscriptions.add(subscription);
   }

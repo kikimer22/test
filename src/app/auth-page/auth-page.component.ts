@@ -38,7 +38,7 @@ export class AuthPageComponent implements OnInit, OnDestroy {
   }
 
   public signInEmail(data: EnteredUserData) {
-    this.auth.signInUpEmail(data.email, data.password).then(() => {
+    this.auth.signInEmail(data.email, data.password).then(() => {
       this.router.navigate(['/']);
     }).catch(() => {
       this.selectedTabIndex = 3;
@@ -47,7 +47,7 @@ export class AuthPageComponent implements OnInit, OnDestroy {
   }
 
   public signUpEmail(data: EnteredUserData) {
-    this.auth.signInUpEmail(data.email, data.password).then(() => {
+    this.auth.signUpEmail(data.email, data.password).then(() => {
       this.router.navigate(['/']);
     }).catch(() => {
       this.selectedTabIndex = 3;

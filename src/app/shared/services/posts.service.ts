@@ -1,58 +1,54 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FbCreateResponse, Post } from '../interfaces';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService,
   ) {
   }
 
   public create(post: Post): Observable<Post> {
-    return this.http.post(`${environment.firebase.databaseURL}/posts.json`, post)
-      .pipe(map((response: FbCreateResponse) => {
-        return {
-          ...post,
-          id: response.name,
-          date: new Date(post.date)
-        };
-      }));
+    // const requestOptions = {
+    //   headers: new HttpHeaders({
+    //     Authorization: `Bearer ${this.authService.idToken}`
+    //   })
+    // };
+    return this.http.post<Post>(`${environment.beUrl}/posts`, post);
   }
 
   public getAll(): Observable<Post[]> {
-    return this.http.get(`${environment.firebase.databaseURL}/posts.json`)
-      .pipe(map((response: { [key: string]: any }) => {
-        if (response && Object.keys(response).length) {
-          return Object
-            .keys(response)
-            .map(key => ({
-              ...response[key],
-              id: key,
-              date: new Date(response[key].date)
-            }));
-        } else {
-          return [];
-        }
-      }));
+    // const requestOptions = {
+    //   headers: new HttpHeaders({
+    //     Authorization: `Bearer ${this.authService.idToken}`
+    //   })
+    // };
+    return this.http.get<Post[]>(`${environment.beUrl}/posts`);
   }
 
   public getById(id: string): Observable<Post> {
-    return this.http.get<Post>(`${environment.firebase.databaseURL}/posts/${id}.json`)
-      .pipe(map((post: Post) => {
-        return {
-          ...post, id,
-          date: new Date(post.date)
-        };
-      }));
+    // const requestOptions = {
+    //   headers: new HttpHeaders({
+    //     Authorization: `Bearer ${this.authService.idToken}`
+    //   })
+    // };
+    return this.http.get<Post>(`${environment.beUrl}/posts/${id}`);
   }
 
   public remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${environment.firebase.databaseURL}/posts/${id}.json`);
+    // const requestOptions = {
+    //   headers: new HttpHeaders({
+    //     Authorization: `Bearer ${this.authService.idToken}`
+    //   })
+    // };
+    return this.http.delete<void>(`${environment.beUrl}/posts/${id}`);
   }
 
   public update(post: Post): Observable<Post> {

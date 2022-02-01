@@ -5,6 +5,7 @@ import { AuthService } from './shared/services/auth.service';
 import { MobileService } from './shared/services/mobile.service';
 import firebase from 'firebase/compat';
 import User = firebase.User;
+import { idToken } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-root',
@@ -35,7 +36,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private getUser() {
     const subscription = this.auth.user$.subscribe((user: User) => {
-      console.log(user);
       this.user = user;
     });
     this.subscriptions.add(subscription);

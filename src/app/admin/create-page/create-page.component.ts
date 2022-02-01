@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Post } from '../../shared/interfaces';
 import { PostsService } from '../../shared/services/posts.service';
-import { AlertService } from '../shared/services/alert.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-page',
@@ -16,7 +17,8 @@ export class CreatePageComponent implements OnInit {
 
   constructor(
     private postsService: PostsService,
-    private alert: AlertService
+    private authService: AuthService,
+    private router: Router,
   ) {
   }
 
@@ -24,7 +26,6 @@ export class CreatePageComponent implements OnInit {
     this.form = new FormGroup({
       title: new FormControl(null, Validators.required),
       text: new FormControl(null, Validators.required),
-      author: new FormControl(null, Validators.required)
     });
   }
 
@@ -35,14 +36,14 @@ export class CreatePageComponent implements OnInit {
 
     const post: Post = {
       title: this.form.value.title,
-      author: this.form.value.author,
+      authorUid: this.authService.user$.value.uid,
       text: this.form.value.text,
-      date: new Date()
+      date: new Date(Date.now())
     };
 
     this.postsService.create(post).subscribe(() => {
       this.form.reset();
-      this.alert.success('Пост был создан');
+      this.router.navigate(['admin', 'dashboard']);
     });
   }
 
