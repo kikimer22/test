@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { PostsService } from '../../shared/services/posts.service';
 import { switchMap } from 'rxjs/operators';
@@ -23,13 +23,14 @@ export class EditPageComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private postsService: PostsService,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
   ngOnInit() {
     this.route.params.pipe(
       switchMap((params: Params) => {
-        return this.postsService.getById(params['id']);
+        return this.postsService.getById(params.id);
       })
     ).subscribe((post: Post) => {
       this.post = post;
@@ -37,6 +38,7 @@ export class EditPageComponent implements OnInit, OnDestroy {
         title: new FormControl(post.title, Validators.required),
         text: new FormControl(post.text, Validators.required)
       });
+      this.cdr.detectChanges();
     });
   }
 
