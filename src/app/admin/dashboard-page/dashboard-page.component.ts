@@ -15,6 +15,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public isLoading = true;
   public searchStr = '';
+  private direction = 'up';
 
   constructor(
     private postsService: PostsService,
@@ -44,7 +45,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscription);
   }
 
-  public remove(id: string) {
+  public remove(id: number) {
     const subscription = this.postsService.remove(id).subscribe(() => {
       this.posts = this.posts.filter(post => post.id !== id);
       this.cdr.detectChanges();
@@ -52,4 +53,35 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscription);
   }
 
+  sortBy(key: string) {
+
+    function compare(a, b) {
+      if (a[key] < b[key]) {
+        return -1;
+      }
+      if (a[key] > b[key]) {
+        return 1;
+      }
+      return 0;
+    }
+
+    function compareReverse(a, b) {
+      if (a[key] < b[key]) {
+        return 1;
+      }
+      if (a[key] > b[key]) {
+        return -1;
+      }
+      return 0;
+    }
+
+    if (this.direction === 'up') {
+      this.posts.sort(compare);
+    } else {
+      this.posts.sort(compareReverse);
+    }
+
+    this.direction = this.direction === 'up' ? 'down' : 'up';
+
+  }
 }

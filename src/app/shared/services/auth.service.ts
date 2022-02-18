@@ -131,8 +131,9 @@ export class AuthService {
     }
   }
 
-  public isAuthenticated(): boolean {
-    return !!this.idToken;
+  get isLoggedIn(): boolean {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return !!user;
   }
 
 }

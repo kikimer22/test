@@ -48,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public signOut(event: Event) {
     event.preventDefault();
     this.auth.signOut();
+    this.router.navigate(['/']);
   }
 
 }

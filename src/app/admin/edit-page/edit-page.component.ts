@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Location } from '@angular/common';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { PostsService } from '../../shared/services/posts.service';
 import { switchMap } from 'rxjs/operators';
 import { Post } from '../../shared/interfaces';
@@ -21,16 +22,18 @@ export class EditPageComponent implements OnInit, OnDestroy {
   uSub: Subscription;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private postsService: PostsService,
     private cdr: ChangeDetectorRef,
+    private location: Location,
   ) {
   }
 
   ngOnInit() {
     this.route.params.pipe(
       switchMap((params: Params) => {
-        return this.postsService.getById(params.id);
+        return this.postsService.getById(+params.id);
       })
     ).subscribe((post: Post) => {
       this.post = post;
@@ -62,6 +65,16 @@ export class EditPageComponent implements OnInit, OnDestroy {
       date: new Date(Date.now())
     }).subscribe(() => {
       this.submitted = false;
+      this.router.navigate(['/admin/dashboard']);
     });
   }
+
+  public back() {
+    if (this.location) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+
 }

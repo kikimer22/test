@@ -1,4 +1,12 @@
 <div *ngIf="form; else loading">
+  <button
+    mat-button
+    class="btn btn-primary"
+    type="button"
+    (click)="back()"
+  >
+    < back
+  </button>
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div
       class="form-control"
@@ -21,10 +29,13 @@
     </div>
 
     <button
+      mat-button
       class="btn btn-primary"
-      type="submit"
+      type="button"
+      (click)="submit()"
       [disabled]="form.invalid || submitted"
-    >Обновить
+    >
+      Обновить
     </button>
   </form>
 </div>

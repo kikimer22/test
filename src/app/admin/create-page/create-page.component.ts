@@ -4,6 +4,7 @@ import { Post } from '../../shared/interfaces';
 import { PostsService } from '../../shared/services/posts.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-create-page',
@@ -19,6 +20,7 @@ export class CreatePageComponent implements OnInit {
     private postsService: PostsService,
     private authService: AuthService,
     private router: Router,
+    private location: Location,
   ) {
   }
 
@@ -45,6 +47,14 @@ export class CreatePageComponent implements OnInit {
       this.form.reset();
       this.router.navigate(['admin', 'dashboard']);
     });
+  }
+
+  public back() {
+    if (this.location) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
 }

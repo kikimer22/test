@@ -11,22 +11,22 @@
     <table>
       <thead>
       <tr>
-        <th>#</th>
-        <th>Название</th>
-        <th>Дата</th>
+        <th (click)="sortBy('id')">#</th>
+        <th (click)="sortBy('title')">Название</th>
+        <th (click)="sortBy('date')">Дата</th>
         <th>Действие</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let post of posts | searchPosts:searchStr; let idx = index">
-        <td>{{ idx + 1 }}</td>
+        <td>{{ idx + 1 }}) id: {{post.id}}</td>
         <td>{{ post.title }}</td>
         <td>{{ post.date | date:'medium':null:'ru' }}</td>
         <td>
           <button mat-button type="button" class="btn" [routerLink]="['/admin', 'post', post.id, 'edit']">
             Открыть
           </button>
-          <a mat-button (click)="remove(post.id)">Удалить</a>
+          <button mat-button type="button" class="btn remove" (click)="remove(post.id)">Удалить</button>
         </td>
       </tr>
       </tbody>
@@ -36,5 +36,7 @@
   <ng-template #noPosts>
     <p class="text-center">no posts...</p>
   </ng-template>
+
+  <a mat-button [routerLink]="['/admin', 'create']">create</a>
 
 </ng-template>
